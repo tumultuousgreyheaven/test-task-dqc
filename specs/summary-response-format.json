@@ -1,0 +1,14 @@
+{
+ "run": { "id": "RUN-008", "snapshot_date": "2026-10-26" },
+ "compared_to": { "id": "RUN-007", "snapshot_date": "2026-10-19" },
+  "unit": { "id": "HQ-CIB", "name": "Департамент корпоративного бизнеса" },
+ "metrics": [
+ { "key": "clean_goals_share", "title": "Доля корректных целей", "unit": "%",
+ "value": 56.5, "previous": 62.7, "delta": -6.2, "trend": "worse" }
+ ],
+ "issues_by_severity": [
+ { "code": "critical", "current": 2, "previous": 2, "delta": 0 },
+ { "code": "major", "current": 23, "previous": 15, "delta": 8 }
+ ],
+ "delta": { "new": 10, "persisting": 33, "resolved": 2 }
+}
