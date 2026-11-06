@@ -1,0 +1,11 @@
+target/
+.git/
+.idea/
+.vscode/
+.mvn/wrapper/maven-wrapper.jar
+.env
+db/
+scripts/
+docker-compose.yml
+*.md
+specs/

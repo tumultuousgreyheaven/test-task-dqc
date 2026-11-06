@@ -1,0 +1,62 @@
+name: dqc
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dqc}
+      POSTGRES_USER: ${POSTGRES_USER:-dqc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dqc_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  # Одноразовый сервис: применяет миграции и завершается.
+  # Откат и повторный накат вручную: scripts/check-migrations.sh
+  migrate:
+    image: ${LIQUIBASE_IMAGE:-liquibase/liquibase:4.29.2}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-dqc}
+      LIQUIBASE_COMMAND_USERNAME: ${POSTGRES_USER:-dqc}
+      LIQUIBASE_COMMAND_PASSWORD: ${POSTGRES_PASSWORD:-dqc_password}
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: db.changelog-root.yaml
+      LIQUIBASE_SEARCH_PATH: /liquibase/changelog
+    volumes:
+      - ./db/changelog:/liquibase/changelog:ro
+    command: ["update"]
+    restart: "no"
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-dqc}
+      DB_USER: ${POSTGRES_USER:-dqc}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-dqc_password}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-demo}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  pgdata:

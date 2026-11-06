@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - include:
+      file: changes/001-org-unit.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changes/002-goal-and-key-result.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changes/003-kkd-schema.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changes/004-kkd-rules-data.sql
+      relativeToChangelogFile: true
