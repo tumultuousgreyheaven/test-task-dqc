@@ -22,7 +22,6 @@ public final class QualitySnapshot {
 
     private final LocalDate asOf;
     private final OrgTree orgTree;
-    private final List<Goal> goals;
     private final List<Goal> activeGoals;
     private final Map<String, Goal> goalsById;
     private final Map<String, List<KeyResult>> keyResultsByGoalId;
@@ -38,16 +37,15 @@ public final class QualitySnapshot {
             Collection<KeyResult> keyResults) {
         this.asOf = Objects.requireNonNull(asOf, "asOf");
         this.orgTree = new OrgTree(units);
-        this.goals = List.copyOf(goals);
 
-        Map<String, Goal> byId = new LinkedHashMap<>();
-        for (Goal goal : this.goals) {
+        Map<String, Goal> byId = new LinkedHashMap<>(); // порядок загрузки сохраняется
+        for (Goal goal : goals) {
             if (byId.putIfAbsent(goal.id(), goal) != null) {
                 throw new IllegalArgumentException("Цель указана дважды: " + goal.id());
             }
         }
         this.goalsById = Collections.unmodifiableMap(byId);
-        this.activeGoals = this.goals.stream().filter(Goal::isActive).toList();
+        this.activeGoals = byId.values().stream().filter(Goal::isActive).toList();
 
         Map<String, List<KeyResult>> grouped = new HashMap<>();
         for (KeyResult keyResult : keyResults) {
@@ -65,16 +63,12 @@ public final class QualitySnapshot {
         return orgTree;
     }
 
-    /** Все цели независимо от статуса (нужны, чтобы пройти вверх по цепочке родителей). */
-    public List<Goal> goals() {
-        return goals;
-    }
-
     /** Цели в статусе active, в порядке загрузки. */
     public List<Goal> activeGoals() {
         return activeGoals;
     }
 
+    /** Цель по идентификатору независимо от статуса (нужна, чтобы пройти вверх по цепочке родителей). */
     public Optional<Goal> goal(String goalId) {
         return Optional.ofNullable(goalsById.get(goalId));
     }

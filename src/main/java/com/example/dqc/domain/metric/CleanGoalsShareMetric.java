@@ -39,7 +39,7 @@ public final class CleanGoalsShareMetric implements QualityMetric {
 
     @Override
     public Map<String, Ratio> measure(QualitySnapshot snapshot, List<Issue> issues) {
-        // goalId есть и у проблем КР, поэтому проблема КР делает «некорректной» всю цель
+        // goalId есть и у проблем КР, поэтому проблема КР делает "некорректной" всю цель
         Set<String> goalsWithIssues = issues.stream().map(Issue::goalId).collect(Collectors.toSet());
         RatioAccumulator accumulator = new RatioAccumulator();
         for (Goal goal : snapshot.activeGoals()) {
