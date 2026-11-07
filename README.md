@@ -61,7 +61,7 @@ HTTP-сервер и PostgreSQL для этих тестов не требуют
 как Spring-бин в `infrastructure.config.DomainConfiguration`. \
 В пакете `domain.metric` так же реализован класс `MetricComparator`, который статическим методом `compare` сравнивает `Ratio` метрики между двумя
 прогонами. Возвращает объект `MetricReading` - результат по метрике, содержащий значение в предыдущем и текущем прогоне (`BigDecimal`), дельту и
-тренд (enum `Trend`: лучше, хуже или так же). \
+тренд (enum `Trend`: лучше, хуже или так же).
 
 ### Дельты
 
