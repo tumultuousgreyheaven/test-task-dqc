@@ -15,4 +15,9 @@ public record Run(String id, LocalDate snapshotDate, RunStatus status, String co
         Objects.requireNonNull(snapshotDate, "snapshotDate");
         Objects.requireNonNull(status, "status");
     }
+
+    /** Тот же прогон в статусе completed. */
+    public Run completed() {
+        return new Run(id, snapshotDate, RunStatus.COMPLETED, comparedToRunId);
+    }
 }
